@@ -8,12 +8,12 @@ class GameBoard extends Component {
     super(props);
 
     this.state = {
-      word: ' ',
+      word: '',
       approvedWords: [],
       error: '',
-      board: [[''," "," "," "],[" "," "," "," "],[" "," "," "," "],[" "," "," "," "]],
+      board: [[" "," "," "," "],[" "," "," "," "],[" "," "," "," "],[" "," "," "," "]],
       time: {},
-      seconds: 60,
+      seconds: 300,
       score: 0,
       validityData: 0
     };
@@ -26,6 +26,17 @@ class GameBoard extends Component {
     this.countDown = this.countDown.bind(this);
   }
 
+  componentDidMount() {
+    this.startGame();
+
+    //api test
+    this.testing();
+  }
+
+  testing(){
+    this.validateWordAPI_test("test");
+  }
+
   handleChange(event){
     this.setState({
       word: event.target.value,
@@ -34,17 +45,105 @@ class GameBoard extends Component {
 
   }
 
+  isRepeated(visited,i,j){
+    for(let k=0; k<visited.length;k++){
+      if(visited[k][0]===i && visited[k][1]===j ){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  isOutOfBounds(i, j, boardDim, direction){
+    if(direction === 'tp' && i-1<0)
+      return true;
+    else if(direction === 'tr' && (i-1<0 || j+1>boardDim))
+      return true;
+    else if(direction === 'rt' &&  j+1>boardDim)
+      return true;
+    else if(direction === 'br' && (i+1>boardDim || j+1>boardDim))
+      return true;
+    else if(direction === 'bt' && i+1>boardDim)
+      return true;
+    else if(direction === 'bl' && (i+1>boardDim || j-1<0))
+      return true;
+    else if(direction === 'lt' && j-1<0)
+      return true;
+    else if(direction === 'tl' && (i-1<0 || j-1<0))
+      return true;
+    else
+      return false;
+
+  }
+
+  async validateWordAPI_test(word){
+    if(word){
+        const key = 'dict.1.1.20200319T090129Z.8eb6b755e125a705.7fd9b9cb85a09a0dd9c47a86bb564c856893cafc';
+        const response = await fetch(`https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=${key}&lang=en-ru&text=${word}`);
+        const data = await response.json();
+        if(data){
+          if(this.validate(word) === true ) {
+              this.setState({error: ''});
+              this.setState(previousState => ({
+              approvedWords: [...previousState.approvedWords, word]}));
+              this.setState({word: ''});
+          }
+          else {
+              this.setState({error: ''});
+              this.setState({word: ''});
+          }
+        }
+        else {
+            this.setState({error: 'invalid!!'});
+            this.setState({word: ''});
+        }
+  }
+  else {
+    this.setState({error: 'enter a word!'});
+  }
+  }
+
+  async validateWordAPI(event){
+    event.preventDefault();
+    const word = event.target[0].value;
+    // if(word){
+        const key = 'dict.1.1.20200319T090129Z.8eb6b755e125a705.7fd9b9cb85a09a0dd9c47a86bb564c856893cafc';
+        const response = await fetch(`https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=${key}&lang=en-ru&text=${word}`);
+        const data = await response.json();
+        if(data){
+          if(this.validate(word) === true ) {
+              this.setState({error: ''});
+              this.setState(previousState => ({
+              approvedWords: [...previousState.approvedWords, word]}));
+              this.setState({word: ''});
+          }
+          else {
+              this.setState({error: 'invalid!!'});
+              this.setState({word: ''});
+          }
+        }
+        else {
+            this.setState({error: 'invalid!!'});
+            this.setState({word: ''});
+        }
+  // }
+  // else {
+  //   this.setState({error: 'enter a word!'});
+  // }
+  }
+
   validate(word){
     const board = this.state.board;
     const currentWord = word.toLowerCase();
+
     if(this.state.approvedWords.includes(currentWord))
       return false;
-      // console.log(!this.isOutOfBounds(3,0,3,'rt') && !this.isRepeated(visited,2,0) && board[3][1].toLowerCase()===word[1]);
       for(let i=0;i<board.length;i++){
           for(let j=0;j<board[0].length;j++){
-              if(board[i][j].toLowerCase() === currentWord[0].toLowerCase())
+              if(board[i][j].toLowerCase() === currentWord[0]){
               if(this.depthFirstSearch(i, j, board, currentWord))
               return true;
+            }
           }
       }
     return false;
@@ -53,7 +152,7 @@ class GameBoard extends Component {
   depthFirstSearch(i, j, board, word){
     let stack = [];
     let approvedLetters = [[i,j]];
-    let wordLength = word.length;
+    const wordLength = word.length;
     const boardDim = board.length;
     var k = 1;
     var value = [];
@@ -112,72 +211,11 @@ class GameBoard extends Component {
           const number_of_items_to_backtrack = approvedLetters.length - (k-1);
           for(let l=0;l<number_of_items_to_backtrack;l++){
             approvedLetters.pop();
-
           }
           value = stack.pop();i = value[0]; j = value[1]; lettersFound = 0;
           approvedLetters.push(value);
         }
       }
-  }
-
-  isRepeated(visited,i,j){
-    for(let k=0; k<visited.length;k++){
-      if(visited[k][0]===i && visited[k][1]===j ){
-        return true;
-      }
-    }
-    return false;
-  }
-
-  isOutOfBounds(i, j, boardDim, direction){
-    if(direction === 'tp' && i-1<0)
-      return true;
-    else if(direction === 'tr' && (i-1<0 || j+1>boardDim))
-      return true;
-    else if(direction === 'rt' &&  j+1>boardDim)
-      return true;
-    else if(direction === 'br' && (i+1>boardDim || j+1>boardDim))
-      return true;
-    else if(direction === 'bt' && i+1>boardDim)
-      return true;
-    else if(direction === 'bl' && (i+1>boardDim || j-1<0))
-      return true;
-    else if(direction === 'lt' && j-1<0)
-      return true;
-    else if(direction === 'tl' && (i-1<0 || j-1<0))
-      return true;
-    else
-      return false;
-
-  }
-
-  async validateWordAPI(event){
-        event.preventDefault();
-    const word = event.target[0].value;
-    const key = 'dict.1.1.20200319T090129Z.8eb6b755e125a705.7fd9b9cb85a09a0dd9c47a86bb564c856893cafc';
-    const response = await fetch(`https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=${key}&lang=en-ru&text=${word}`);
-    const data = await response.json();
-    if(data.def.length>0){
-      if(this.validate(word) === true ) {
-          this.setState({error: ''});
-          this.setState(previousState => ({
-          approvedWords: [...previousState.approvedWords, word]}));
-          this.setState({word: ''});
-          // event.target[0].value = this.state.word;
-      }
-      else {
-          this.setState({error: 'invalid!!'});
-          this.setState({word: ''});
-          // event.target[0].value = this.state.word;
-      }
-    }
-    else {
-        this.setState({error: 'invalid!!'});
-        this.setState({word: ''});
-        // event.target[0].value = this.state.word;
-    }
-
-    // return data;
   }
 
   secondsToTime(secs){
@@ -219,31 +257,22 @@ class GameBoard extends Component {
     }
   }
 
-  componentDidMount() {
-    this.startGame();
-  }
-
   async startGame() {
     const response = await fetch('/api/v1/boards');
     const data = await response.json();
 
-  this.setState({board: data});
-  console.log('data is:');
-  console.log(this.state.board);
+  this.setState({
+    board: data,
+    approvedWords: []});
   let timeLeftVar = this.secondsToTime(this.state.seconds);
   this.setState({ time: timeLeftVar });
-
   this.startTimer();
   }
 
   async getNewGame(){
-
     const response = await fetch('/api/v1/boards');
     const data = await response.json();
     return data;
-     // .catch(err => return([['E',"T","N","A"],["D","Z","E","E"],["L","O","U","R"],["S","T","O","P"]]));
-
-
   }
 
   endGame(){
@@ -260,19 +289,21 @@ class GameBoard extends Component {
     this.setState({
       board: [['','','',''],['','','',''],['','','',''],['','','','']],
       approvedWords: [],
-      seconds: 60,
+      seconds: 300,
       error: ''
       });
-
   }
 
   playAgain(){
+    this.endGame();
+    clearInterval(this.timer);
+    this.timer = 0;
     this.startGame();
   }
 
   render(){
 
-    const {word, approvedWords, error, board, time, seconds} = this.state;
+    const {word, approvedWords, error, board, time} = this.state;
     return(
 
       <div id="mainboard">
@@ -299,7 +330,7 @@ class GameBoard extends Component {
                     <div>
                       <button
                       onClick={this.playAgain}
-                      >Play Again
+                      >Play Next
                       </button>
 
                     </div>

@@ -9,8 +9,8 @@ gem 'rails', '~> 6.0.2', '>= 6.0.2.2'
 gem 'sqlite3', '~> 1.4'
 # Use Puma as the app server
 gem "passenger"
-gem "thor", "~> 0.19.1"
-gem 'foreman','~> 0.82.0'
+#gem "thor", "~> 0.19.1"
+#gem 'foreman','~> 0.82.0'
 gem 'sass-rails', '>= 6'
 # Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
 gem 'webpacker', '~> 4.0'
