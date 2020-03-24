@@ -14,7 +14,7 @@ it("Word list renders without crashing",() => {
 });
 
 
-it("Words in the word list component are rendered correctly",() => {
+it("Words in the word list component are rendered properly",() => {
   const {getByTestId} = render(<Wordlist value = {wordlistArr}/>);
   expect (getByTestId('wordlist')).toHaveTextContent("apple");
 });
