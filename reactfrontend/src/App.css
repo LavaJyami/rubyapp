@@ -14,6 +14,9 @@
   margin-left: 60px;
   margin-top: 20px;
 }
+h1{
+  color: gray;
+}
 .square {
   display: flex;
   width: 55px;
