@@ -1,24 +1,13 @@
-# README
+Word Boggle Web Game
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Front end is in React and the backend is in RoR. 
 
-Things you may want to cover:
+To setup the app: 
 
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+1. Clone the project into a folder
+2. Go to "reactfrontend" folder and: install NPM
+3. go to the main folder and do: bundle install 
+4. start the backend rails project by going to the main folder (rails server -p 3001)
+5. start the front-end react project by going to the "reactfrontend" folder and starting the server in port 3000(npm start)
+6. if setp 5 does not automatially start the project do: localhost:3000. 
+7. enjoy the game :) 
