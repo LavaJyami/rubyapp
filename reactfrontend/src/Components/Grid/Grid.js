@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import Square from './Square';
-import './App.css';
+import Square from '../Square/Square';
+import '../../App.css';
 
-class Mainboard extends Component{
+class Grid extends Component{
   render(){
     const data = this.props.value;
     return(
-      <div>
+      <div data-testid = "grid">
         <h1>Word Boggle !!</h1>
         <div className="squarecontainer">
           <div className="row">
@@ -36,4 +36,4 @@ class Mainboard extends Component{
 
 }
 
-export default Mainboard;
+export default Grid;

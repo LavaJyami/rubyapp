@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import Mainboard from './Mainboard';
-import Wordlist from './Wordlist';
-import Score from './Score';
+import Grid from '../Grid/Grid';
+import Wordlist from '../Wordlist/Wordlist';
+import Score from '../Score/Score';
 
 class GameBoard extends Component {
   constructor(props){
@@ -305,12 +305,11 @@ class GameBoard extends Component {
 
     const {word, approvedWords, error, board, time} = this.state;
     return(
-
-      <div id="mainboard">
+      <div id="gameboard" >
             <div className = "boards">
-                <div>
-                    <Mainboard value = {board}/>
 
+                <div className = "section_first">
+                    <Grid value = {board}/>
                     <form id="input_box" onSubmit={this.validateWordAPI}>
                         <input
                         type="text"
@@ -323,27 +322,24 @@ class GameBoard extends Component {
                         type="submit"
                         value="Add +"
                         />
-
                     </form>
-
                     <p className = "error">{error}</p>
                     <div>
                       <button
                       onClick={this.playAgain}
                       >Play Next
                       </button>
-
                     </div>
-                  </div>
+                </div>
 
-                  <div>
-                      <div id="timer">
-                        Time remaining: {time.m} : {time.s}
-                      </div>
-                      <Wordlist value = {approvedWords}/>
-                      <Score words={approvedWords} />
+                <div className = "section_second">
+                    <div id="timer">
+                      Time remaining: {time.m} : {time.s}
+                    </div>
+                    <Wordlist value = {approvedWords}/>
+                    <Score words={approvedWords} />
+                </div>
 
-                  </div>
             </div>
       </div>
 

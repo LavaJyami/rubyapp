@@ -21,7 +21,7 @@ class Score extends Component {
   }
   render(){
     return(
-      <div id="score">
+      <div id="score" data-testid = "score">
         Score: {this.showScore()}
       </div>
     );
