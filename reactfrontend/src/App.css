@@ -1,5 +1,6 @@
 #gameboard {
-  margin-left: 50px;
+  display: flex;
+  justify-content: center;
 }
 #timer{
   margin-top: 50px;
@@ -15,11 +16,21 @@
 }
 .square {
   display: flex;
-  width: 80px;
-  height: 80px;
+  width: 55px;
+  height: 55px;
   border: 1px solid #d5d5d5;
   align-items: center;
   justify-content: center;
+  border-radius: 15%;
+  margin: 2px;
+  background-color: #e5ff96;
+}
+
+.playAgain>button{
+  height: 40px;
+  width: 120px;
+  background-color: #ff52b4;
+  color: white;
 }
 
 .row{
@@ -30,21 +41,35 @@
 #input_box {
   margin-top: 30px;
 }
-
+#input_box>input[type=text]{
+  height: 30px;
+  padding: 4px;
+  width: 120px;
+  border: 1px solid green;
+  border-radius: 5px;
+}
 .textbox {
   margin-left: 10px;
   margin-right: 50px;
 }
 #wordList{
-  border: 1px solid gray;
-  min-width: 120px;
+  border: 1px solid #ff52b4;
+  border-radius: 10px;
+  width: 150px;
   margin-left: 40px;
-  height: 325px;
-  margin-top: 15px;
+  min-height: 235px;
+  margin-top: 17px;
 }
-.wordList{
+.wordList>li{
   list-style: none;
   min-height: 100%;
+  font-size: 14px;
+  display: inline-block;
+  padding: 4px;
+  /* padding: 3px; */
+}
+.wordList{
+  padding: 4px;
 }
 .boards{
   display: flex;
@@ -52,13 +77,10 @@
   justify-content: center;
 }
 
-.wordListTitle {
-  margin-left: 20px;
-}
 
 .addButton{
   margin-left: 20px;
-  background: green;
+  background: #531eff;
   color: white;
   height: 30px;
   border-radius: 3px;

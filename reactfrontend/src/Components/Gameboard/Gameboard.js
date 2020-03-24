@@ -262,19 +262,12 @@ class GameBoard extends Component {
   async startGame() {
     const response = await fetch('/api/v1/boards');
     const data = await response.json();
-
-  this.setState({
-    board: data,
-    approvedWords: []});
-  let timeLeftVar = this.secondsToTime(this.state.seconds);
-  this.setState({ time: timeLeftVar });
-  this.startTimer();
-  }
-
-  async getNewGame(){
-    const response = await fetch('/api/v1/boards');
-    const data = await response.json();
-    return data;
+    this.setState({
+      board: data,
+      approvedWords: []});
+    let timeLeftVar = this.secondsToTime(this.state.seconds);
+    this.setState({ time: timeLeftVar });
+    this.startTimer();
   }
 
   endGame(){
@@ -325,10 +318,10 @@ class GameBoard extends Component {
                         />
                     </form>
                     <p className = "error">{error}</p>
-                    <div>
+                    <div className = "playAgain">
                       <button
                       onClick={this.playAgain}
-                      >Play Next
+                      >Play Next >>
                       </button>
                     </div>
                 </div>
