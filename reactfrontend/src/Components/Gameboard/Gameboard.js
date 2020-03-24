@@ -28,7 +28,6 @@ class GameBoard extends Component {
 
   componentDidMount() {
     this.startGame();
-
     //api test
     this.testing();
   }
@@ -106,11 +105,12 @@ class GameBoard extends Component {
   async validateWordAPI(event){
     event.preventDefault();
     const word = event.target[0].value;
-    // if(word){
+    if(word){
         const key = 'dict.1.1.20200319T090129Z.8eb6b755e125a705.7fd9b9cb85a09a0dd9c47a86bb564c856893cafc';
         const response = await fetch(`https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=${key}&lang=en-ru&text=${word}`);
         const data = await response.json();
-        if(data){
+        console.log(data);
+        if(data && data.length>0){
           if(this.validate(word) === true ) {
               this.setState({error: ''});
               this.setState(previousState => ({
@@ -126,10 +126,10 @@ class GameBoard extends Component {
             this.setState({error: 'invalid!!'});
             this.setState({word: ''});
         }
-  // }
-  // else {
-  //   this.setState({error: 'enter a word!'});
-  // }
+  }
+  else {
+    this.setState({error: 'enter a word!'});
+  }
   }
 
   validate(word){
