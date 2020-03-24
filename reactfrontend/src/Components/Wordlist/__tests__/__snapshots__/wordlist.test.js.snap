@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`matches snapshot 1`] = `
+<div
+  data-testid="wordlist"
+  id="wordList"
+>
+  <ul
+    className="wordList"
+  >
+    <li>
+      apple
+    </li>
+    <li>
+      oranges
+    </li>
+    <li>
+      game
+    </li>
+    <li>
+      pc
+    </li>
+  </ul>
+</div>
+`;
