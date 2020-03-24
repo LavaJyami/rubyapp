@@ -63,7 +63,7 @@
 .wordList>li{
   list-style: none;
   min-height: 100%;
-  font-size: 14px;
+  font-size: 12px;
   display: inline-block;
   padding: 4px;
   /* padding: 3px; */
@@ -76,7 +76,6 @@
   flex-direction: row;
   justify-content: center;
 }
-
 
 .addButton{
   margin-left: 20px;
