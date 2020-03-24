@@ -11,12 +11,13 @@ class GameBoard extends Component {
       word: '',
       approvedWords: [],
       error: '',
-      board: [[" "," "," "," "],[" "," "," "," "],[" "," "," "," "],[" "," "," "," "]],
+      board: [...Array(4)].map(lt => Array(4)),
       time: {},
       seconds: 300,
       score: 0,
       validityData: 0
     };
+
     this.handleChange = this.handleChange.bind(this);
     this.validateWordAPI = this.validateWordAPI.bind(this);
     this.timer = 0;
@@ -24,6 +25,7 @@ class GameBoard extends Component {
     this.startGame = this.startGame.bind(this);
     this.playAgain = this.playAgain.bind(this);
     this.countDown = this.countDown.bind(this);
+
   }
 
   componentDidMount() {
@@ -34,6 +36,7 @@ class GameBoard extends Component {
 
   testing(){
     this.validateWordAPI_test("test");
+    console.log("testingAPI");
   }
 
   handleChange(event){
@@ -41,7 +44,6 @@ class GameBoard extends Component {
       word: event.target.value,
       error: ''
     });
-
   }
 
   isRepeated(visited,i,j){
@@ -110,7 +112,7 @@ class GameBoard extends Component {
         const response = await fetch(`https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=${key}&lang=en-ru&text=${word}`);
         const data = await response.json();
         console.log(data);
-        if(data && data.length>0){
+        if(data && data.def.length>0){
           if(this.validate(word) === true ) {
               this.setState({error: ''});
               this.setState(previousState => ({
@@ -302,7 +304,6 @@ class GameBoard extends Component {
   }
 
   render(){
-
     const {word, approvedWords, error, board, time} = this.state;
     return(
       <div id="gameboard" >
