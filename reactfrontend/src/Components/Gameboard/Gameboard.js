@@ -5,7 +5,7 @@ import Score from '../Score/Score';
 
 import {  depthFirstSearch,
           isRepeated,
-          isOutOfBounds
+          isOutOfBounds,
         } from '../../Functions/DFSFunctions';
 
 class GameBoard extends Component {
@@ -51,8 +51,6 @@ class GameBoard extends Component {
         const key = 'dict.1.1.20200319T090129Z.8eb6b755e125a705.7fd9b9cb85a09a0dd9c47a86bb564c856893cafc';
         const response = await fetch(`https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=${key}&lang=en-ru&text=${word}`);
         const data = await response.json();
-        console.log('API: ');
-        console.log(data && data.def.length>0);
         if(data && data.def.length>0){
           if(this.validate(word) === true ) {
               this.setState({error: ''});
@@ -76,20 +74,20 @@ class GameBoard extends Component {
   }
 
   validate(word){
-    const board = this.state.board;
-    const currentWord = word.toLowerCase();
-
-    if(this.state.approvedWords.includes(currentWord))
-      return false;
-      for(let i=0;i<board.length;i++){
-          for(let j=0;j<board[0].length;j++){
-              if(board[i][j].toLowerCase() === currentWord[0]){
-              if(depthFirstSearch(i, j, board, currentWord))
-              return true;
-            }
-          }
-      }
-    return false;
+  //   const board = this.state.board;
+  //   const currentWord = word.toLowerCase();
+  //
+  //   if(this.state.approvedWords.includes(currentWord))
+  //     return false;
+  //     for(let i=0;i<board.length;i++){
+  //         for(let j=0;j<board[0].length;j++){
+  //             if(board[i][j].toLowerCase() === currentWord[0]){
+  //             if(depthFirstSearch(i, j, board, currentWord))
+  //             return true;
+  //           }
+  //         }
+  //     }
+  //   return false;
   }
 
   secondsToTime(secs){
@@ -162,8 +160,6 @@ class GameBoard extends Component {
     this.timer = 0;
     this.startGame();
   }
-
-
 
   render(){
     const {word, approvedWords, error, board, time} = this.state;
