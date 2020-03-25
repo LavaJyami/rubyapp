@@ -67,10 +67,7 @@ while(k<=wordLength){
             return true;
         value = stack.pop();i = value[0]; j = value[1]; foundFlag=false; lettersFound = 0;
         approvedLetters.push(value);
-        for(let x=0; x<approvedLetters.length; x++){
-        let a = approvedLetters[x][0];
-        let b = approvedLetters[x][1];
-        }
+  
     }
 
     else if(foundFlag && lettersFound> 1){

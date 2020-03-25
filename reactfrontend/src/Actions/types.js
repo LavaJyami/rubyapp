@@ -1,0 +1,4 @@
+export const HANDLETEXTINPUT = 'HANDLE_TEXT_INPUT';
+export const RESETWORD = 'RESETWORD';
+export const SETERROR = 'SETERROR';
+export const RESETERROR = 'RESETERROR';

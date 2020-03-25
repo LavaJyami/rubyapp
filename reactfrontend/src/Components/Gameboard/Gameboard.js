@@ -2,10 +2,16 @@ import React, { Component } from 'react';
 import Grid from '../Grid/Grid';
 import Wordlist from '../Wordlist/Wordlist';
 import Score from '../Score/Score';
+import { connect } from 'react-redux';
+import {
+        handleChange,
+        resetWord,
+        resetError,
+        setError
+        } from '../../Actions/actions'
 
-import {  depthFirstSearch,
-          isRepeated,
-          isOutOfBounds,
+import {
+        depthFirstSearch,
         } from '../../Functions/DFSFunctions';
 
 class GameBoard extends Component {
@@ -13,7 +19,6 @@ class GameBoard extends Component {
     super(props);
 
     this.state = {
-      word: '',
       approvedWords: [],
       error: '',
       board: [...Array(4)].map(lt => Array(4)),
@@ -23,7 +28,7 @@ class GameBoard extends Component {
       validityData: 0
     };
 
-    this.handleChange = this.handleChange.bind(this);
+    this.handleChange = this.props.handleChange.bind(this);
     this.validateWordAPI = this.validateWordAPI.bind(this);
     this.timer = 0;
     this.startTimer = this.startTimer.bind(this);
@@ -37,13 +42,6 @@ class GameBoard extends Component {
     this.startGame();
   }
 
-  handleChange(event){
-    this.setState({
-      word: event.target.value,
-      error: ''
-    });
-  }
-
   async validateWordAPI(event){
     event.preventDefault();
     const word = event.target[0].value;
@@ -53,41 +51,41 @@ class GameBoard extends Component {
         const data = await response.json();
         if(data && data.def.length>0){
           if(this.validate(word) === true ) {
-              this.setState({error: ''});
+            this.props.resetError();
+            this.props.resetWord();
               this.setState(previousState => ({
               approvedWords: [...previousState.approvedWords, word]}));
-              this.setState({word: ''});
           }
           else {
-              this.setState({error: 'invalid!!'});
-              this.setState({word: ''});
+            this.props.setError('invalid!!')
+            this.props.resetWord();
           }
         }
         else {
-            this.setState({error: 'invalid!!'});
-            this.setState({word: ''});
+            this.props.setError('invalid!!')
+            this.props.resetWord();
         }
   }
   else {
-    this.setState({error: 'enter a word!'});
+    this.props.setError('enter a word!')
   }
   }
 
   validate(word){
-  //   const board = this.state.board;
-  //   const currentWord = word.toLowerCase();
-  //
-  //   if(this.state.approvedWords.includes(currentWord))
-  //     return false;
-  //     for(let i=0;i<board.length;i++){
-  //         for(let j=0;j<board[0].length;j++){
-  //             if(board[i][j].toLowerCase() === currentWord[0]){
-  //             if(depthFirstSearch(i, j, board, currentWord))
-  //             return true;
-  //           }
-  //         }
-  //     }
-  //   return false;
+    const board = this.state.board;
+    const currentWord = word.toLowerCase();
+
+    if(this.state.approvedWords.includes(currentWord))
+      return false;
+      for(let i=0;i<board.length;i++){
+          for(let j=0;j<board[0].length;j++){
+              if(board[i][j].toLowerCase() === currentWord[0]){
+              if(depthFirstSearch(i, j, board, currentWord))
+              return true;
+            }
+          }
+      }
+    return false;
   }
 
   secondsToTime(secs){
@@ -146,11 +144,11 @@ class GameBoard extends Component {
     }
     else
     alert('Your Score is: ' + 0) ;
+    this.props.resetError();
     this.setState({
       board: [...Array(4)].map(lt => Array(4)),
       approvedWords: [],
       seconds: 300,
-      error: ''
       });
   }
 
@@ -162,7 +160,7 @@ class GameBoard extends Component {
   }
 
   render(){
-    const {word, approvedWords, error, board, time} = this.state;
+    const {approvedWords, board, time} = this.state;
     return(
       <div id="gameboard" >
             <div className = "boards">
@@ -172,7 +170,7 @@ class GameBoard extends Component {
                         <input
                         type="text"
                         onChange={this.handleChange}
-                        value={word}
+                        value={this.props.word}
                         placeholder="enter word"
                         />
                         <input
@@ -182,7 +180,7 @@ class GameBoard extends Component {
                         value="Add +"
                         />
                     </form>
-                    <p className = "error">{error}</p>
+                    <p className = "error">{this.props.error}</p>
                     <div className = "playAgain">
                         <button
                         onClick={this.playAgain}
@@ -205,4 +203,16 @@ class GameBoard extends Component {
   }
 }
 
-export default GameBoard;
+const mapStateToProps = state => ({
+...state
+});
+
+const mapDispatchToProps = dispatch => ({
+  handleChange: (payload) => dispatch(handleChange(payload)),
+  resetWord: (payload) => dispatch(resetWord(payload)),
+  resetError: (payload) => dispatch(resetError(payload)),
+  setError: (payload) => dispatch(setError(payload)),
+
+});
+
+export default connect(mapStateToProps, mapDispatchToProps )(GameBoard);
