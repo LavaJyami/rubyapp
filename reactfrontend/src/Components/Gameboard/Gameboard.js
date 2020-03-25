@@ -73,7 +73,6 @@ class GameBoard extends Component {
       return true;
     else
       return false;
-
   }
 
   async validateWordAPI_test(word){
