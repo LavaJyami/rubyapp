@@ -3,6 +3,11 @@ import Grid from '../Grid/Grid';
 import Wordlist from '../Wordlist/Wordlist';
 import Score from '../Score/Score';
 
+import {  depthFirstSearch,
+          isRepeated,
+          isOutOfBounds
+        } from '../../Functions/DFSFunctions';
+
 class GameBoard extends Component {
   constructor(props){
     super(props);
@@ -30,12 +35,6 @@ class GameBoard extends Component {
 
   componentDidMount() {
     this.startGame();
-    //api test
-    this.testing();
-  }
-
-  testing(){
-    this.validateWordAPI_test("test");
   }
 
   handleChange(event){
@@ -43,63 +42,6 @@ class GameBoard extends Component {
       word: event.target.value,
       error: ''
     });
-  }
-
-  isRepeated(visited,i,j){
-    for(let k=0; k<visited.length;k++){
-      if(visited[k][0]===i && visited[k][1]===j ){
-        return true;
-      }
-    }
-    return false;
-  }
-
-  isOutOfBounds(i, j, boardDim, direction){
-    if(direction === 'tp' && i-1<0)
-      return true;
-    else if(direction === 'tr' && (i-1<0 || j+1>boardDim))
-      return true;
-    else if(direction === 'rt' &&  j+1>boardDim)
-      return true;
-    else if(direction === 'br' && (i+1>boardDim || j+1>boardDim))
-      return true;
-    else if(direction === 'bt' && i+1>boardDim)
-      return true;
-    else if(direction === 'bl' && (i+1>boardDim || j-1<0))
-      return true;
-    else if(direction === 'lt' && j-1<0)
-      return true;
-    else if(direction === 'tl' && (i-1<0 || j-1<0))
-      return true;
-    else
-      return false;
-  }
-
-  async validateWordAPI_test(word){
-    if(word){
-        const key = 'dict.1.1.20200319T090129Z.8eb6b755e125a705.7fd9b9cb85a09a0dd9c47a86bb564c856893cafc';
-        const response = await fetch(`https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=${key}&lang=en-ru&text=${word}`);
-        const data = await response.json();
-        if(data){
-          if(this.validate(word) === true ) {
-              this.setState({error: ''});
-              this.setState(previousState => ({
-              approvedWords: [...previousState.approvedWords, word]}));
-              this.setState({word: ''});
-          }
-          else {
-              this.setState({error: ''});
-              this.setState({word: ''});
-          }
-        }
-        else {
-            this.setState({error: 'invalid!!'});
-            this.setState({word: ''});
-        }
-  }
-  else {
-    this.setState({error: 'enter a word!'});
-  }
   }
 
   async validateWordAPI(event){
@@ -142,112 +84,12 @@ class GameBoard extends Component {
       for(let i=0;i<board.length;i++){
           for(let j=0;j<board[0].length;j++){
               if(board[i][j].toLowerCase() === currentWord[0]){
-                console.log('result of dfs');
-                console.log(this.depthFirstSearch(i,j,board,currentWord));
-              if(this.depthFirstSearch(i, j, board, currentWord))
+              if(depthFirstSearch(i, j, board, currentWord))
               return true;
             }
           }
       }
     return false;
-  }
-
-  depthFirstSearch(i, j, board, word){
-    let stack = [];
-    let approvedLetters = [[i,j]];
-    const wordLength = word.length;
-    const boardDim = board.length;
-    let k = 1;
-    let value = [];
-    let foundFlag  = false;
-    let lettersFound = 0;
-    let unchecked_branch = 0;
-
-    while(k<=wordLength){
-      if(!this.isOutOfBounds(i,j,boardDim-1,'tp') && !this.isRepeated(approvedLetters,i-1,j) && board[i-1][j].toLowerCase()===word[k]){
-        stack.push([i-1,j]); foundFlag = true; lettersFound++; console.log('found in tp');
-      }
-      if(!this.isOutOfBounds(i,j,boardDim-1,'tr') && !this.isRepeated(approvedLetters,i-1,j+1) && board[i-1][j+1].toLowerCase()===word[k]){
-        stack.push([i-1,j+1]);  foundFlag = true; lettersFound++; console.log('found in tr');
-      }
-      if(!this.isOutOfBounds(i,j,boardDim-1,'rt') && !this.isRepeated(approvedLetters,i,j+1) && board[i][j+1].toLowerCase()===word[k]){
-        stack.push([i,j+1]);  foundFlag = true; lettersFound++; console.log('found in rt');
-        }
-      if(!this.isOutOfBounds(i,j,boardDim-1,'br') && !this.isRepeated(approvedLetters,i+1,j+1) && board[i+1][j+1].toLowerCase()===word[k]){
-        stack.push([i+1,j+1]); foundFlag = true; lettersFound++; console.log('found in br');
-        }
-      if(!this.isOutOfBounds(i,j,boardDim-1,'bt') && !this.isRepeated(approvedLetters,i+1,j) && board[i+1][j].toLowerCase()===word[k]){
-        stack.push([i+1,j]);  foundFlag = true; lettersFound++; console.log('found in bt');
-        }
-      if(!this.isOutOfBounds(i,j,boardDim-1,'bl') && !this.isRepeated(approvedLetters,i+1,j-1) && board[i+1][j-1].toLowerCase()===word[k]){
-        stack.push([i+1,j-1]); foundFlag = true; lettersFound++; console.log('found in bl');
-        }
-      if(!this.isOutOfBounds(i,j,boardDim-1,'lt') && !this.isRepeated(approvedLetters,i,j-1) && board[i][j-1].toLowerCase()===word[k]){
-        stack.push([i,j-1]); foundFlag = true; lettersFound++; console.log('found in lt');
-        }
-      if(!this.isOutOfBounds(i,j,boardDim-1,'tl') && !this.isRepeated(approvedLetters,i-1,j-1) && board[i-1][j-1].toLowerCase()===word[k]){
-        stack.push([i-1,j-1]); foundFlag = true; lettersFound++; console.log('found in tl');
-        }
-
-        if(!foundFlag && stack.length === 0) {
-            return false;
-        }
-        if(foundFlag && lettersFound === 1){
-            k++;
-            if(k === wordLength)
-            return true;
-            value = stack.pop();i = value[0]; j = value[1]; foundFlag=false; lettersFound = 0;
-
-            approvedLetters.push(value);
-            console.log(approvedLetters);
-            for(let x=0; x<approvedLetters.length; x++){
-              let a = approvedLetters[x][0];
-              let b = approvedLetters[x][1];
-              console.log(board[a][b]);
-            }
-        }
-         else if(foundFlag && lettersFound> 1){
-            unchecked_branch = k+1;
-            k++;
-            if(k === wordLength)
-            return true;
-            value = stack.pop();i = value[0]; j = value[1]; foundFlag=false; lettersFound = 0;
-            approvedLetters.push(value);
-            console.log(approvedLetters);
-            for(let x=0; x<approvedLetters.length; x++){
-              let a = approvedLetters[x][0];
-              let b = approvedLetters[x][1];
-              console.log(board[a][b]);
-            }
-            console.log('value of k (found multiple): '+ k);
-
-        }
-         else if(!foundFlag && stack.length>0){
-            k = unchecked_branch;
-            const number_of_items_to_backtrack = approvedLetters.length - (k-1);
-            console.log('unchecked branch');
-            console.log('---------------------------------------');
-            console.log(approvedLetters);
-            for(let x=0; x<approvedLetters.length; x++){
-              let a = approvedLetters[x][0];
-              let b = approvedLetters[x][1];
-              console.log(board[a][b]);
-            }
-            for(let l=0;l<number_of_items_to_backtrack;l++){
-              approvedLetters.pop();
-            }
-            value = stack.pop();i = value[0]; j = value[1]; lettersFound = 0;
-            approvedLetters.push(value);
-            console.log(approvedLetters);
-            for(let x=0; x<approvedLetters.length; x++){
-              let a = approvedLetters[x][0];
-              let b = approvedLetters[x][1];
-              console.log(board[a][b]);
-            }
-            console.log('value of k back_tracking: '+ k);
-
-        }
-      }
   }
 
   secondsToTime(secs){
@@ -307,7 +149,7 @@ class GameBoard extends Component {
     else
     alert('Your Score is: ' + 0) ;
     this.setState({
-      board: [['','','',''],['','','',''],['','','',''],['','','','']],
+      board: [...Array(4)].map(lt => Array(4)),
       approvedWords: [],
       seconds: 300,
       error: ''
@@ -320,6 +162,8 @@ class GameBoard extends Component {
     this.timer = 0;
     this.startGame();
   }
+
+
 
   render(){
     const {word, approvedWords, error, board, time} = this.state;
@@ -337,6 +181,7 @@ class GameBoard extends Component {
                         />
                         <input
                         className = "addButton"
+                        data-testid = "addbutton"
                         type="submit"
                         value="Add +"
                         />
