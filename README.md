@@ -11,3 +11,5 @@ To setup the app (OSx terminal):
 3. Go to the "reactfrontend" folder and install npm (npm install)
 4. Start the front-end react project by going to the "reactfrontend" folder and starting the server in port 3000(npm start).
 5. enjoy the game :) 
+
+This appilcation uses Yandex dictationary API to verify the words entered.
