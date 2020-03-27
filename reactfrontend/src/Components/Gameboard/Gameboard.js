@@ -3,6 +3,8 @@ import Grid from '../Grid/Grid';
 import Wordlist from '../Wordlist/Wordlist';
 import Score from '../Score/Score';
 import { connect } from 'react-redux';
+import { arrayMapHelper } from '../../Functions/DFSFunctions';
+
 import {
         handleChange,
         resetWord,
@@ -25,7 +27,8 @@ class GameBoard extends Component {
       time: {},
       seconds: 300,
       score: 0,
-      validityData: 0
+      validityData: 0,
+      squareclassname: [],
     };
 
     this.handleChange = this.props.handleChange.bind(this);
@@ -35,15 +38,28 @@ class GameBoard extends Component {
     this.startGame = this.startGame.bind(this);
     this.playAgain = this.playAgain.bind(this);
     this.countDown = this.countDown.bind(this);
-
   }
 
   componentDidMount() {
     this.startGame();
   }
 
+  hilightsquare(toHilight){
+    if(toHilight && toHilight.length>0){
+        const hltArr = toHilight.map(e => {
+            return arrayMapHelper(e);
+        });
+        this.setState({squareclassname: hltArr});
+    }
+    else {
+      this.setState({
+        squareclassname: []
+      });
+    }
+  }
   async validateWordAPI(event){
     event.preventDefault();
+    this.hilightsquare();
     const word = event.target[0].value;
     if(word){
         const key = 'dict.1.1.20200319T090129Z.8eb6b755e125a705.7fd9b9cb85a09a0dd9c47a86bb564c856893cafc';
@@ -80,8 +96,13 @@ class GameBoard extends Component {
       for(let i=0;i<board.length;i++){
           for(let j=0;j<board[0].length;j++){
               if(board[i][j].toLowerCase() === currentWord[0]){
-              if(depthFirstSearch(i, j, board, currentWord))
-              return true;
+                const returnedResult = depthFirstSearch(i, j, board, currentWord);
+              if(returnedResult.foundVar){
+                this.hilightsquare(returnedResult.letters);
+                console.log(returnedResult.letters);
+                return true;
+
+              }
             }
           }
       }
@@ -165,7 +186,7 @@ class GameBoard extends Component {
       <div id="gameboard" >
             <div className = "boards">
                 <div className = "section_first">
-                    <Grid value = {board}/>
+                    <Grid squareclassname = {this.state.squareclassname} value = {board}/>
                     <form id="input_box" onSubmit={this.validateWordAPI}>
                         <input
                         type="text"

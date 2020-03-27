@@ -5,7 +5,9 @@ import {
   RESETERROR
 } from './types';
 
+
 export function handleChange(event){
+
   return {
         type: HANDLETEXTINPUT,
         text: event.target.value     // action payload

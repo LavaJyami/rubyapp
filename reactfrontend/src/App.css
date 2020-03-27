@@ -29,6 +29,27 @@ h1{
   background-color: #e5ff96;
 }
 
+@keyframes highlight {
+  0% {
+    background-color: red
+  }
+  100% {
+    background-color: #e5ff96;
+  }
+}
+.square_hilighted {
+  display: flex;
+  width: 55px;
+  height: 55px;
+  border: 1px solid #d5d5d5;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15%;
+  margin: 2px;
+  background-color: #e5ff96;
+  animation: highlight 2s;
+}
+
 .playAgain>button{
   height: 40px;
   width: 120px;

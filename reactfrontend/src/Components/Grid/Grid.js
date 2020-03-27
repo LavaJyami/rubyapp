@@ -4,15 +4,25 @@ import '../../App.css';
 
 class Grid extends Component{
   render(){
+    const listId = this.props.squareclassname;
     const data = this.props.value;
     let values = [];
     for(let i=0; i<data.length;i++){
-              let j=i*3;
+      let j=i*3;
       values[i] =
          <div className="row" key={i+j}>
             {data[i].map(n => {
               {j++};
-              return <Square key={i+j} value={n}/>})}
+              if(listId && listId.length>0){
+                if(listId.includes(i+j))
+                  return <Square className = "square_hilighted" key={i+j} value={n}/>
+                else
+                  return <Square className = "square" key={i+j} value={n}/>
+              }
+              else if(listId.length<1)
+                  return <Square className = "square" key={i+j} value={n}/>
+
+            })}
          </div>
     }
     return(

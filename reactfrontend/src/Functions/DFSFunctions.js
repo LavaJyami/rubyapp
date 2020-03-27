@@ -30,6 +30,7 @@ let value = [];
 let foundFlag  = false;
 let lettersFound = 0;
 let unchecked_branch = 0;
+let returnValue = {};
 
 while(k<=wordLength){
     if(!isOutOfBounds(i,j,boardDim-1,'tp') && !isRepeated(approvedLetters,i-1,j) && board[i-1][j].toLowerCase()===word[k]){
@@ -63,20 +64,25 @@ while(k<=wordLength){
 
     if(foundFlag && lettersFound === 1){
         k++;
-        if(k === wordLength)
-            return true;
         value = stack.pop();i = value[0]; j = value[1]; foundFlag=false; lettersFound = 0;
         approvedLetters.push(value);
-  
+        if(k === wordLength){
+          returnValue.foundVar = true;
+          returnValue.letters = approvedLetters;
+          return returnValue;
+        }
     }
 
     else if(foundFlag && lettersFound> 1){
         unchecked_branch = k+1;
         k++;
-        if(k === wordLength)
-            return true;
         value = stack.pop();i = value[0]; j = value[1]; foundFlag=false; lettersFound = 0;
         approvedLetters.push(value);
+        if(k === wordLength){
+          returnValue.foundVar = true;
+          returnValue.letters = approvedLetters;
+          return returnValue;
+        }
     }
 
     else if(!foundFlag && stack.length>0){
@@ -99,4 +105,43 @@ export const isRepeated = (visited,i,j) => {
         }
     }
     return false;
+}
+
+
+
+export const arrayMapHelper = (e) => {
+const i=e[0];
+const j=e[1];
+if(i===0 && j===0)
+return 1;
+if(i===0 && j===1)
+return 2;
+if(i===0 && j===2)
+return 3;
+if(i===0 && j===3)
+return 4;
+if(i===1 && j===0)
+return 5;
+if(i===1 && j===1)
+return 6;
+if(i===1 && j===2)
+return 7;
+if(i===1 && j===3)
+return 8;
+if(i===2 && j===0)
+return 9;
+if(i===2 && j===1)
+return 10;
+if(i===2 && j===2)
+return 11;
+if(i===2 && j===3)
+return 12;
+if(i===3 && j===0)
+return 13;
+if(i===3 && j===1)
+return 14;
+if(i===3 && j===2)
+return 15;
+if(i===3 && j===3)
+return 16;
 }
