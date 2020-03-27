@@ -2,12 +2,14 @@ import {
   HANDLETEXTINPUT,
   RESETWORD,
   RESETERROR,
-  SETERROR
+  SETERROR,
+  SQUARECLASSNAME
  } from "../Actions/types";
 
 const INITIAL_STATE = {
   word: '',
-  error: ''
+  error: '',
+  squareclassname: [],
 };
 
 function WBReducer(state = INITIAL_STATE, action){
@@ -28,6 +30,13 @@ function WBReducer(state = INITIAL_STATE, action){
         return Object.assign({}, state, {
           error: action.text
         })
+        case SQUARECLASSNAME:{
+          console.log('from inside reducer');
+          console.log(action.payload);
+          console.log(action);
+        return Object.assign({}, state, {
+          squareclassname: action.payload
+        })}
          default:
            return state;
      }

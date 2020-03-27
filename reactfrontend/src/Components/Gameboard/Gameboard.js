@@ -9,7 +9,8 @@ import {
         handleChange,
         resetWord,
         resetError,
-        setError
+        setError,
+        hilightsquare
         } from '../../Actions/actions'
 
 import {
@@ -28,7 +29,7 @@ class GameBoard extends Component {
       seconds: 300,
       score: 0,
       validityData: 0,
-      squareclassname: [],
+      // squareclassname: [],
     };
 
     this.handleChange = this.props.handleChange.bind(this);
@@ -44,22 +45,10 @@ class GameBoard extends Component {
     this.startGame();
   }
 
-  hilightsquare(toHilight){
-    if(toHilight && toHilight.length>0){
-        const hltArr = toHilight.map(e => {
-            return arrayMapHelper(e);
-        });
-        this.setState({squareclassname: hltArr});
-    }
-    else {
-      this.setState({
-        squareclassname: []
-      });
-    }
-  }
+
   async validateWordAPI(event){
     event.preventDefault();
-    this.hilightsquare();
+    this.props.hilightsquare();
     const word = event.target[0].value;
     if(word){
         const key = 'dict.1.1.20200319T090129Z.8eb6b755e125a705.7fd9b9cb85a09a0dd9c47a86bb564c856893cafc';
@@ -98,7 +87,10 @@ class GameBoard extends Component {
               if(board[i][j].toLowerCase() === currentWord[0]){
                 const returnedResult = depthFirstSearch(i, j, board, currentWord);
               if(returnedResult.foundVar){
-                this.hilightsquare(returnedResult.letters);
+                this.props.hilightsquare(returnedResult.letters);
+                console.log('in the redux store :');
+                console.log(this.props.squareclassname);
+                console.log('as returned: ');
                 console.log(returnedResult.letters);
                 return true;
 
@@ -186,7 +178,7 @@ class GameBoard extends Component {
       <div id="gameboard" >
             <div className = "boards">
                 <div className = "section_first">
-                    <Grid squareclassname = {this.state.squareclassname} value = {board}/>
+                    <Grid squareclassname = {this.props.squareclassname} value = {board}/>
                     <form id="input_box" onSubmit={this.validateWordAPI}>
                         <input
                         type="text"
@@ -230,9 +222,10 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   handleChange: (payload) => dispatch(handleChange(payload)),
-  resetWord: (payload) => dispatch(resetWord(payload)),
-  resetError: (payload) => dispatch(resetError(payload)),
+  resetWord: () => dispatch(resetWord()),
+  resetError: () => dispatch(resetError()),
   setError: (payload) => dispatch(setError(payload)),
+  hilightsquare: (payload) => dispatch(hilightsquare(payload))
 
 });
 

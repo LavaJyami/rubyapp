@@ -5,6 +5,8 @@ import '../../App.css';
 class Grid extends Component{
   render(){
     const listId = this.props.squareclassname;
+    // console.log('listId');
+    // console.log(this.props.squareclassname);
     const data = this.props.value;
     let values = [];
     for(let i=0; i<data.length;i++){
@@ -19,7 +21,7 @@ class Grid extends Component{
                 else
                   return <Square className = "square" key={i+j} value={n}/>
               }
-              else if(listId.length<1)
+              else
                   return <Square className = "square" key={i+j} value={n}/>
 
             })}
