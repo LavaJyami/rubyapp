@@ -15,7 +15,7 @@ const INITIAL_STATE = {
   word: '',
   error: '',
   squareclassname: [],
-  approvedwords: ["xant"],
+  approvedwords: [],
   board: [...Array(4)].map(lt => Array(4))
 };
 
