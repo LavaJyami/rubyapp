@@ -3,37 +3,32 @@ import Grid from '../Grid/Grid';
 import Wordlist from '../Wordlist/Wordlist';
 import Score from '../Score/Score';
 import { connect } from 'react-redux';
-import { arrayMapHelper } from '../../Functions/DFSFunctions';
 
 import {
         handleChange,
         resetWord,
         resetError,
         setError,
-        hilightsquare
-        } from '../../Actions/actions'
+        validateWordAPI,
+        resetApprovedWords,
+        resetBoard,
+        updateBoard
+      } from '../../Actions/actions'
 
-import {
-        depthFirstSearch,
-        } from '../../Functions/DFSFunctions';
 
 class GameBoard extends Component {
   constructor(props){
     super(props);
 
     this.state = {
-      approvedWords: [],
-      error: '',
-      board: [...Array(4)].map(lt => Array(4)),
+      // board: [...Array(4)].map(lt => Array(4)),
       time: {},
       seconds: 300,
       score: 0,
-      validityData: 0,
-      // squareclassname: [],
     };
 
     this.handleChange = this.props.handleChange.bind(this);
-    this.validateWordAPI = this.validateWordAPI.bind(this);
+    this.validateWord = this.validateWord.bind(this);
     this.timer = 0;
     this.startTimer = this.startTimer.bind(this);
     this.startGame = this.startGame.bind(this);
@@ -43,62 +38,6 @@ class GameBoard extends Component {
 
   componentDidMount() {
     this.startGame();
-  }
-
-
-  async validateWordAPI(event){
-    event.preventDefault();
-    this.props.hilightsquare();
-    const word = event.target[0].value;
-    if(word){
-        const key = 'dict.1.1.20200319T090129Z.8eb6b755e125a705.7fd9b9cb85a09a0dd9c47a86bb564c856893cafc';
-        const response = await fetch(`https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=${key}&lang=en-ru&text=${word}`);
-        const data = await response.json();
-        if(data && data.def.length>0){
-          if(this.validate(word) === true ) {
-            this.props.resetError();
-            this.props.resetWord();
-              this.setState(previousState => ({
-              approvedWords: [...previousState.approvedWords, word]}));
-          }
-          else {
-            this.props.setError('invalid!!')
-            this.props.resetWord();
-          }
-        }
-        else {
-            this.props.setError('invalid!!')
-            this.props.resetWord();
-        }
-  }
-  else {
-    this.props.setError('enter a word!')
-  }
-  }
-
-  validate(word){
-    const board = this.state.board;
-    const currentWord = word.toLowerCase();
-
-    if(this.state.approvedWords.includes(currentWord))
-      return false;
-      for(let i=0;i<board.length;i++){
-          for(let j=0;j<board[0].length;j++){
-              if(board[i][j].toLowerCase() === currentWord[0]){
-                const returnedResult = depthFirstSearch(i, j, board, currentWord);
-              if(returnedResult.foundVar){
-                this.props.hilightsquare(returnedResult.letters);
-                console.log('in the redux store :');
-                console.log(this.props.squareclassname);
-                console.log('as returned: ');
-                console.log(returnedResult.letters);
-                return true;
-
-              }
-            }
-          }
-      }
-    return false;
   }
 
   secondsToTime(secs){
@@ -138,29 +77,27 @@ class GameBoard extends Component {
     const response = await fetch('/api/v1/boards');
     const data = await response.json();
     let timeLeftVar = this.secondsToTime(this.state.seconds);
+    this.props.resetApprovedWords();
+    this.props.updateBoard(data);
     this.setState({
-      board: data,
-      approvedWords: [],
       time: timeLeftVar
     });
     this.startTimer();
   }
 
   endGame(){
-    let length = this.state.approvedWords.length;
+    let length = this.props.approvedwords.length;
     let totalScore = 0;
     if(length > 0){
       for(let i=0;i<length;i++){
-        totalScore = totalScore + this.state.approvedWords[i].length;
+        totalScore = totalScore + this.props.approvedwords[i].length;
       }
-      alert('Your Score is: ' + totalScore) ;
     }
-    else
-    alert('Your Score is: ' + 0) ;
     this.props.resetError();
+    this.props.resetApprovedWords();
+    this.props.resetBoard();
     this.setState({
       board: [...Array(4)].map(lt => Array(4)),
-      approvedWords: [],
       seconds: 300,
       });
   }
@@ -172,14 +109,25 @@ class GameBoard extends Component {
     this.startGame();
   }
 
+
+validateWord(event){
+  event.preventDefault();
+  var payload = {};
+  payload.word = event.target[0].value;
+  payload.board = this.props.board;
+  payload.approvedwords = this.props.approvedwords;
+  this.props.validateWordAPI(payload);
+}
   render(){
-    const {approvedWords, board, time} = this.state;
-    return(
+    const {time} = this.state;
+    const {board, squareclassname, error, approvedwords} = this.props;
+        return(
       <div id="gameboard" >
             <div className = "boards">
                 <div className = "section_first">
-                    <Grid squareclassname = {this.props.squareclassname} value = {board}/>
-                    <form id="input_box" onSubmit={this.validateWordAPI}>
+                    <Grid squareclassname = {squareclassname} value = {board}/>
+                    <form id="input_box" onSubmit={event => {
+                      this.validateWord(event)}}>
                         <input
                         type="text"
                         onChange={this.handleChange}
@@ -193,7 +141,7 @@ class GameBoard extends Component {
                         value="Add +"
                         />
                     </form>
-                    <p className = "error">{this.props.error}</p>
+                    <p className = "error">{error}</p>
                     <div className = "playAgain">
                         <button
                         onClick={this.playAgain}
@@ -205,8 +153,8 @@ class GameBoard extends Component {
                     <div id="timer">
                         Time remaining: {time.m} : {time.s}
                     </div>
-                    <Wordlist value = {approvedWords}/>
-                    <Score words={approvedWords} />
+                    <Wordlist value = {approvedwords}/>
+                    <Score words={approvedwords} />
                 </div>
             </div>
       </div>
@@ -220,13 +168,15 @@ const mapStateToProps = state => ({
 ...state
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   handleChange: (payload) => dispatch(handleChange(payload)),
   resetWord: () => dispatch(resetWord()),
   resetError: () => dispatch(resetError()),
   setError: (payload) => dispatch(setError(payload)),
-  hilightsquare: (payload) => dispatch(hilightsquare(payload))
-
+  validateWordAPI: (payload) => {dispatch(validateWordAPI(payload))},
+  resetApprovedWords: ()=>dispatch(resetApprovedWords()),
+  resetBoard: ()=>dispatch(resetBoard()),
+  updateBoard: (payload)=>dispatch(updateBoard(payload)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps )(GameBoard);

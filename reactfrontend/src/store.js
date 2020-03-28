@@ -1,4 +1,5 @@
-import { createStore } from "redux";
+import { createStore, applyMiddleware } from "redux";
+import thunk from 'redux-thunk';
 import WBReducer from "./Reducers/reducer";
 
-export default createStore(WBReducer);
+export default createStore(WBReducer, applyMiddleware(thunk));

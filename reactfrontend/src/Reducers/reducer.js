@@ -3,40 +3,70 @@ import {
   RESETWORD,
   RESETERROR,
   SETERROR,
-  SQUARECLASSNAME
+  SQUARECLASSNAME,
+  WORDVALID,
+  WORDINVALID,
+  RESETAPPROVEDWORDS,
+  UPDATEBOARD,
+  RESETBOARD
  } from "../Actions/types";
 
 const INITIAL_STATE = {
   word: '',
   error: '',
   squareclassname: [],
+  approvedwords: ["xant"],
+  board: [...Array(4)].map(lt => Array(4))
 };
 
 function WBReducer(state = INITIAL_STATE, action){
     switch(action.type) {
         case HANDLETEXTINPUT:
         return Object.assign({}, state, {
-          word: action.word
+          word: action.word,
+          error: '',
+          squareclassname: []
         })
         case RESETWORD:
         return Object.assign({}, state, {
-          word: ''
+          word: ' '
         })
         case RESETERROR:
         return Object.assign({}, state, {
-          error: ''
+          error: '',
         })
         case SETERROR:
         return Object.assign({}, state, {
           error: action.text
         })
-        case SQUARECLASSNAME:{
-          console.log('from inside reducer');
-          console.log(action.payload);
-          console.log(action);
+        case SQUARECLASSNAME:
         return Object.assign({}, state, {
           squareclassname: action.payload
-        })}
+        })
+        case WORDVALID:
+        return Object.assign({},state,{
+          word: '',
+          error: '',
+          approvedwords: [...state.approvedwords, action.text],
+          squareclassname: action.hilight
+        })
+        case WORDINVALID:
+        return Object.assign({},state,{
+          word: '',
+          error: 'invalid !!',
+        })
+        case UPDATEBOARD:
+        return Object.assign({},state,{
+          board: action.data
+        })
+        case RESETBOARD:
+        return Object.assign({},state,{
+          board:  [...Array(4)].map(lt => Array(4))
+        })
+        case RESETAPPROVEDWORDS:
+        return Object.assign({},state,{
+          approvedwords: []
+        })
          default:
            return state;
      }
