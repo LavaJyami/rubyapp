@@ -38,6 +38,10 @@ function WBReducer(state = INITIAL_STATE, action){
         return Object.assign({}, state, {
           error: '',
         })
+        case RESETAPPROVEDWORDS:
+        return Object.assign({}, state, {
+          approvedwords: [],
+        })
         case SETERROR:
         return Object.assign({}, state, {
           error: action.text
@@ -68,7 +72,8 @@ function WBReducer(state = INITIAL_STATE, action){
         })
         case CHANGEBOARDDIMFOUR:
         return Object.assign({},state,{
-          boardim: parseInt(action.dim)
+          boardim: parseInt(action.dim),
+          squareclassname: []
         })
         case CHANGEBOARDDIMFIVE:
         return Object.assign({},state,{

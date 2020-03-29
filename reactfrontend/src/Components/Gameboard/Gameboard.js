@@ -23,13 +23,15 @@ class GameBoard extends Component {
 
     this.state = {
       time: {},
-      seconds: 90,
+      seconds: 180,
       score: 0,
     };
 
     this.handleChange = this.props.handleChange.bind(this);
     this.validateWord = this.validateWord.bind(this);
     this.timer = 0;
+    this.initialDim = 4;
+    this.gameDuration = 180;
     this.startTimer = this.startTimer.bind(this);
     this.startGame = this.startGame.bind(this);
     this.playAgain = this.playAgain.bind(this);
@@ -38,7 +40,7 @@ class GameBoard extends Component {
   }
 
   componentDidMount() {
-    this.startGame(4);
+    this.startGame(this.initialDim);
   }
 
   secondsToTime(secs){
@@ -55,37 +57,28 @@ class GameBoard extends Component {
       return obj;
     }
 
+    countDown() {
+      let seconds = this.state.seconds - 1;
+      this.setState({
+        time: this.secondsToTime(seconds),
+        seconds: seconds,
+      });
+      if (seconds === 0) {
+        this.endGame();
+        clearInterval(this.timer);
+        this.timer = 0;
+      }
+    }
+
   startTimer() {
     if (this.timer === 0 && this.state.seconds > 0) {
       this.timer = setInterval(this.countDown, 1000);
     }
   }
 
-  countDown() {
-    let seconds = this.state.seconds - 1;
-    this.setState({
-      time: this.secondsToTime(seconds),
-      seconds: seconds,
-    });
-    if (seconds === 0) {
-      this.endGame();
-      clearInterval(this.timer);
-      this.timer = 0;
-    }
-  }
-
   async startGame(boardDim) {
-    const settings = {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        content: parseInt(boardDim)
-    };
-
-    const fetchResponse = await fetch(`/api/v1/boards?Accept='application/json'&content=${boardDim}`);
-    const data = await fetchResponse.json();
+    const response = await fetch(`/api/v1/boards?Accept='application/json'&content=${boardDim}`);
+    const data = await response.json();
     let timeLeftVar = this.secondsToTime(this.state.seconds);
     this.props.resetApprovedWords();
     this.props.updateBoard(data);
@@ -96,18 +89,11 @@ class GameBoard extends Component {
   }
 
   endGame(){
-    let length = this.props.approvedwords.length;
-    let totalScore = 0;
-    if(length > 0){
-      for(let i=0;i<length;i++){
-        totalScore = totalScore + this.props.approvedwords[i].length;
-      }
-    }
     this.props.resetError();
     this.props.resetApprovedWords();
     this.props.resetBoard();
     this.setState({
-      seconds: 90,
+      seconds: this.gameDuration
       });
   }
 
@@ -115,12 +101,12 @@ class GameBoard extends Component {
     this.endGame();
     clearInterval(this.timer);
     this.timer = 0;
-    if(boardDim>3){
-    this.startGame(boardDim);
-  }
-  else{
-    this.startGame(this.props.boardim);
-  }
+    if(boardDim > 0){
+      this.startGame(boardDim);
+    }
+    else{
+      this.startGame(this.props.boardim);
+    }
   }
 
 
@@ -137,6 +123,7 @@ class GameBoard extends Component {
     this.props.changeboarddim(boardDim);
     this.playAgain(boardDim);
   }
+
   changeboarddimfive(boardDim){
     this.props.changeboarddim(boardDim);
     this.playAgain(boardDim);
@@ -145,7 +132,7 @@ class GameBoard extends Component {
   render(){
     const {time} = this.state;
     const {board, squareclassname, error, approvedwords} = this.props;
-        return(
+    return(
       <div id="gameboard" >
             <div className = "boards">
                 <div className = "section_first">
