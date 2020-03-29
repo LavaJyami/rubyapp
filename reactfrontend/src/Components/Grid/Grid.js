@@ -8,7 +8,7 @@ class Grid extends Component{
     const data = this.props.value;
     let values = [];
     for(let i=0; i<data.length;i++){
-      let j=i*3;
+      let j=i*(data.length-1);
       values[i] =
          <div className="row" key={i+j}>
             {data[i].map(n => {

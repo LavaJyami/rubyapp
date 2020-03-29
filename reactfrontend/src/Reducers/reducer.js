@@ -8,7 +8,9 @@ import {
   WORDINVALID,
   RESETAPPROVEDWORDS,
   UPDATEBOARD,
-  RESETBOARD
+  RESETBOARD,
+  CHANGEBOARDDIMFOUR,
+  CHANGEBOARDDIMFIVE
  } from "../Actions/types";
 
 const INITIAL_STATE = {
@@ -16,7 +18,8 @@ const INITIAL_STATE = {
   error: '',
   squareclassname: [],
   approvedwords: [],
-  board: [...Array(4)].map(lt => Array(4))
+  board: [...Array(4).fill(" ")].map(lt => Array(4).fill(" ")),
+  boardim: 4
 };
 
 function WBReducer(state = INITIAL_STATE, action){
@@ -61,11 +64,15 @@ function WBReducer(state = INITIAL_STATE, action){
         })
         case RESETBOARD:
         return Object.assign({},state,{
-          board:  [...Array(4)].map(lt => Array(4))
+          board:  [...Array(4).fill(" ")].map(lt => Array(4).fill(" "))
         })
-        case RESETAPPROVEDWORDS:
+        case CHANGEBOARDDIMFOUR:
         return Object.assign({},state,{
-          approvedwords: []
+          boardim: parseInt(action.dim)
+        })
+        case CHANGEBOARDDIMFIVE:
+        return Object.assign({},state,{
+          boardim: 5
         })
          default:
            return state;

@@ -12,7 +12,8 @@ import {
         validateWordAPI,
         resetApprovedWords,
         resetBoard,
-        updateBoard
+        updateBoard,
+        changeboarddim,
       } from '../../Actions/actions'
 
 
@@ -21,9 +22,8 @@ class GameBoard extends Component {
     super(props);
 
     this.state = {
-      // board: [...Array(4)].map(lt => Array(4)),
       time: {},
-      seconds: 300,
+      seconds: 90,
       score: 0,
     };
 
@@ -34,10 +34,11 @@ class GameBoard extends Component {
     this.startGame = this.startGame.bind(this);
     this.playAgain = this.playAgain.bind(this);
     this.countDown = this.countDown.bind(this);
+    this.changeboarddim = this.changeboarddim.bind(this);
   }
 
   componentDidMount() {
-    this.startGame();
+    this.startGame(4);
   }
 
   secondsToTime(secs){
@@ -73,9 +74,18 @@ class GameBoard extends Component {
     }
   }
 
-  async startGame() {
-    const response = await fetch('/api/v1/boards');
-    const data = await response.json();
+  async startGame(boardDim) {
+    const settings = {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        content: parseInt(boardDim)
+    };
+
+    const fetchResponse = await fetch(`/api/v1/boards?Accept='application/json'&content=${boardDim}`);
+    const data = await fetchResponse.json();
     let timeLeftVar = this.secondsToTime(this.state.seconds);
     this.props.resetApprovedWords();
     this.props.updateBoard(data);
@@ -97,27 +107,41 @@ class GameBoard extends Component {
     this.props.resetApprovedWords();
     this.props.resetBoard();
     this.setState({
-      board: [...Array(4)].map(lt => Array(4)),
-      seconds: 300,
+      seconds: 90,
       });
   }
 
-  playAgain(){
+  playAgain(boardDim){
     this.endGame();
     clearInterval(this.timer);
     this.timer = 0;
-    this.startGame();
+    if(boardDim>3){
+    this.startGame(boardDim);
+  }
+  else{
+    this.startGame(this.props.boardim);
+  }
   }
 
 
-validateWord(event){
-  event.preventDefault();
-  var payload = {};
-  payload.word = event.target[0].value;
-  payload.board = this.props.board;
-  payload.approvedwords = this.props.approvedwords;
-  this.props.validateWordAPI(payload);
-}
+  validateWord(event){
+    event.preventDefault();
+    var payload = {};
+    payload.word = event.target[0].value;
+    payload.board = this.props.board;
+    payload.approvedwords = this.props.approvedwords;
+    this.props.validateWordAPI(payload);
+  }
+
+  changeboarddim(boardDim){
+    this.props.changeboarddim(boardDim);
+    this.playAgain(boardDim);
+  }
+  changeboarddimfive(boardDim){
+    this.props.changeboarddim(boardDim);
+    this.playAgain(boardDim);
+  }
+
   render(){
     const {time} = this.state;
     const {board, squareclassname, error, approvedwords} = this.props;
@@ -146,6 +170,14 @@ validateWord(event){
                         <button
                         onClick={this.playAgain}
                         >Play Next >>
+                        </button>
+                        <button
+                        onClick={()=>this.changeboarddim(4)}
+                        >4 x 4
+                        </button>
+                        <button
+                        onClick={()=>this.changeboarddimfive(5)}
+                        >5 x 5
                         </button>
                     </div>
                 </div>
@@ -177,6 +209,7 @@ const mapDispatchToProps = (dispatch) => ({
   resetApprovedWords: ()=>dispatch(resetApprovedWords()),
   resetBoard: ()=>dispatch(resetBoard()),
   updateBoard: (payload)=>dispatch(updateBoard(payload)),
+  changeboarddim: (payload)=>dispatch(changeboarddim(payload)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps )(GameBoard);
