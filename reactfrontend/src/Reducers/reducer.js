@@ -68,7 +68,9 @@ function WBReducer(state = INITIAL_STATE, action){
         })
         case RESETBOARD:
         return Object.assign({},state,{
-          board:  [...Array(4).fill(" ")].map(lt => Array(4).fill(" "))
+          board:  [...Array(state.boardim).fill(" ")].map(lt => Array(state.boardim).fill(" ")),
+          squareclassname: [],
+          word:''
         })
         case CHANGEBOARDDIMFOUR:
         return Object.assign({},state,{
